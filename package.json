@@ -1,0 +1,23 @@
+{
+  "name": "monthly-cost-car",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./functions/gasprices.js",
+  "dependencies": {
+    "wrangler": "^4.9.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaroszej/monthly-cost-car.git"
+  },
+  "author": "Jason Jaroszewicz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaroszej/monthly-cost-car/issues"
+  },
+  "homepage": "https://github.com/jaroszej/monthly-cost-car#readme"
+}

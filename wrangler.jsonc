@@ -1,0 +1,5 @@
+{
+    "name": "worker-name",
+    "compability_date": "2025-04-09",
+    "main": "./functions/gasprices.js"
+}
