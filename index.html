@@ -40,7 +40,6 @@
 
     button {
       margin-top: 1rem;
-      margin-right: 0.5rem;
       padding: 0.5rem 1rem;
       font-size: 1rem;
       background-color: #2196F3;
@@ -82,11 +81,6 @@
     <label for="fuelCost">Fuel cost per gallon ($)</label>
     <input type="number" step="0.01" id="fuelCost" value="3.20">
 
-    <label for="zip">Enter ZIP Code:</label>
-    <input type="text" id="zip" value="10025" maxlength="5" placeholder="ZIP Code">
-    <button onclick="getFuelCostFromZip()">Fetch Avg Gas Price</button>
-    <button onclick="resetFuelCost()">Reset</button>
-
     <label for="budget">Your budget ($/month)</label>
     <input type="number" id="budget" value="300">
 
@@ -123,39 +117,6 @@
 
   <script>
     let chart;
-    let fetchedFuelPrice = null;
-
-    async function getFuelCostFromZip() {
-      const zip = document.getElementById('zip').value;
-      const fuelInput = document.getElementById('fuelCost');
-
-      try {
-        const zipRes = await fetch(`https://api.zippopotam.us/us/${zip}`);
-        if (!zipRes.ok) throw new Error("ZIP lookup failed");
-        const zipData = await zipRes.json();
-        const stateAbbr = zipData.places[0]['state abbreviation'];
-
-        const seriesId = `PET.EMM_EPMR_PTE_S${stateAbbr}_DPG.W`;
-        const workerUrl = `https://monthly-cost-car.jason-j7435.workers.dev/?series_id=${seriesId}`;
-
-        const res = await fetch(workerUrl);
-        if (!res.ok) throw new Error("Fuel price fetch failed");
-        const data = await res.json();
-        const price = data.series[0].data[0][1];
-
-        fetchedFuelPrice = price;
-        fuelInput.value = price.toFixed(2);
-      } catch (err) {
-        alert("Could not get fuel price. Please check ZIP or try again later.");
-        console.error(err);
-      }
-    }
-
-    function resetFuelCost() {
-      if (fetchedFuelPrice !== null) {
-        document.getElementById('fuelCost').value = fetchedFuelPrice.toFixed(2);
-      }
-    }
 
     function generateGraph() {
       const fuelCost = parseFloat(document.getElementById("fuelCost").value);
