@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Car Cost Comparison by Miles Driven</title>
@@ -17,7 +18,7 @@
       background: white;
       padding: 2rem;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     label {
@@ -39,6 +40,7 @@
 
     button {
       margin-top: 1rem;
+      margin-right: 0.5rem;
       padding: 0.5rem 1rem;
       font-size: 1rem;
       background-color: #2196F3;
@@ -72,12 +74,18 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Compare Monthly Vehicle Cost vs Miles Driven</h1>
 
     <label for="fuelCost">Fuel cost per gallon ($)</label>
     <input type="number" step="0.01" id="fuelCost" value="3.20">
+
+    <label for="zip">Enter ZIP Code:</label>
+    <input type="text" id="zip" value="10025" maxlength="5" placeholder="ZIP Code">
+    <button onclick="getFuelCostFromZip()">Fetch Avg Gas Price</button>
+    <button onclick="resetFuelCost()">Reset</button>
 
     <label for="budget">Your budget ($/month)</label>
     <input type="number" id="budget" value="300">
@@ -115,6 +123,37 @@
 
   <script>
     let chart;
+    let fetchedFuelPrice = null;
+
+    async function getFuelCostFromZip() {
+      const zip = document.getElementById('zip').value;
+      const fuelInput = document.getElementById('fuelCost');
+
+      try {
+        const zipRes = await fetch(`https://api.zippopotam.us/us/${zip}`);
+        if (!zipRes.ok) throw new Error("ZIP lookup failed");
+        const zipData = await zipRes.json();
+        const stateAbbr = zipData.places[0]['state abbreviation'];
+
+        const seriesId = `PET.EMM_EPMR_PTE_S${stateAbbr}_DPG.W`;
+        const apiKey = "EIA_API_KEY";
+        const eiaRes = await fetch(`https://api.eia.gov/series/?api_key=${apiKey}&series_id=${seriesId}`);
+        if (!eiaRes.ok) throw new Error("Fuel price fetch failed");
+        const eiaData = await eiaRes.json();
+        const price = eiaData.series[0].data[0][1];
+
+        fetchedFuelPrice = price;
+        fuelInput.value = price.toFixed(2);
+      } catch (err) {
+        alert("Could not get fuel price. Please check ZIP or try again later.");
+      }
+    }
+
+    function resetFuelCost() {
+      if (fetchedFuelPrice !== null) {
+        document.getElementById('fuelCost').value = fetchedFuelPrice.toFixed(2);
+      }
+    }
 
     function generateGraph() {
       const fuelCost = parseFloat(document.getElementById("fuelCost").value);
@@ -217,4 +256,5 @@
     }
   </script>
 </body>
+
 </html>
