@@ -136,16 +136,18 @@
         const stateAbbr = zipData.places[0]['state abbreviation'];
 
         const seriesId = `PET.EMM_EPMR_PTE_S${stateAbbr}_DPG.W`;
-        const apiKey = "EIA_API_KEY";
-        const eiaRes = await fetch(`https://api.eia.gov/series/?api_key=${apiKey}&series_id=${seriesId}`);
-        if (!eiaRes.ok) throw new Error("Fuel price fetch failed");
-        const eiaData = await eiaRes.json();
-        const price = eiaData.series[0].data[0][1];
+        const workerUrl = `https://monthly-cost-car.jason-j7435.workers.dev/?series_id=${seriesId}`;
+
+        const res = await fetch(workerUrl);
+        if (!res.ok) throw new Error("Fuel price fetch failed");
+        const data = await res.json();
+        const price = data.series[0].data[0][1];
 
         fetchedFuelPrice = price;
         fuelInput.value = price.toFixed(2);
       } catch (err) {
         alert("Could not get fuel price. Please check ZIP or try again later.");
+        console.error(err);
       }
     }
 
